@@ -1,0 +1,62 @@
+﻿<Window x:Class="GameOfLife.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gol="clr-namespace:GameOfLife"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:GameOfLife"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1000" Width="1000" WindowStartupLocation="CenterScreen"
+        WindowState="Normal" WindowStyle="None"
+		Loaded="Window_Loaded">
+    <Window.Resources>
+        <gol:BooleanNegationConverter x:Key="BooleanNegationConverter"></gol:BooleanNegationConverter>
+    </Window.Resources>
+
+    <Border BorderThickness="2" BorderBrush="Maroon">
+        <Border.Background>
+            <ImageBrush ImageSource="/space.jpg" Stretch="UniformToFill"/>
+        </Border.Background>
+		<StackPanel Orientation="Vertical" Margin="10" HorizontalAlignment="Center">
+			<StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+				<StackPanel Orientation="Horizontal">
+					<Label Foreground="White" Width="50" HorizontalContentAlignment="Right">Width</Label>
+					<Slider Width="200" SmallChange="1" TickFrequency="1" TickPlacement="BottomRight" IsEnabled="{Binding ElementName=world, Path=Controller.IsRunning, Converter={StaticResource BooleanNegationConverter}}"
+							Value="{Binding ElementName=world, Path=CellWidth}"
+							Name="sliderWidth" Maximum="100" Minimum="3" LargeChange="5"></Slider>
+					<TextBlock Foreground="White" Text="{Binding ElementName=sliderWidth, Path=Value}"/>
+				</StackPanel>
+				<StackPanel Orientation="Horizontal">
+					<Label Foreground="White" Width="50" HorizontalContentAlignment="Right">Height</Label>
+					<Slider Width="200" SmallChange="1" TickFrequency="1" TickPlacement="BottomRight" 
+							Value="{Binding ElementName=world, Path=CellHeight}"
+							Name="sliderHeight" Maximum="100" Minimum="3" LargeChange="5"></Slider>
+					<TextBlock Foreground="White" Text="{Binding ElementName=sliderHeight, Path=Value}"/>
+				</StackPanel>
+
+			</StackPanel>
+			<StackPanel Orientation="Horizontal">
+
+				<Border BorderThickness="2" BorderBrush="White" Margin="10">
+					<local:LifeCanvas 
+						CellWidth="20" CellHeight="20" x:Name="world" 
+                    />
+				</Border>
+
+				<StackPanel Orientation="Vertical" Margin="0 30 0 0">
+					<Button Click="btnRegen_Click" Margin="10" Padding="10">Regen</Button>
+					<Button Click="btnClose_Click" Margin="10" Padding="10">Close</Button>
+					<Button Click="btnPause_Click" Margin="10 50 10 10" Padding="10">STOP</Button>
+					<Button Click="btnStart_Click" Margin="10" Padding="10">START</Button>
+					<Button Click="btnStep_Click" Margin="10" Padding="10">STEP</Button>
+
+					<Button Click="btnClear_Click" Margin="10 50 10 10" Padding="10">CLEAR WORLD</Button>
+				</StackPanel>
+
+			</StackPanel>
+		</StackPanel>
+
+	</Border>
+    
+
+</Window>
