@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.ComponentModel;
 
 namespace GameOfLife
 {
-	public class Controller : INotifyPropertyChanged
-	{
-		System.Threading.Timer _timer;
+    public class Controller : INotifyPropertyChanged
+    {
+        System.Threading.Timer _timer;
 
-		private LifeCanvas _board;
+        private LifeCanvas _board;
 
 
         private bool _isRunning;
@@ -30,42 +24,42 @@ namespace GameOfLife
             }
         }
 
-		public Controller(LifeCanvas board)
-		{
-			_board = board;
+        public Controller(LifeCanvas board)
+        {
+            _board = board;
             IsRunning = false;
-            
-			_timer = new System.Threading.Timer(o =>
-			{
-				_board.Update();
-			}, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
-		}
 
-		public void Start()
-		{
+            _timer = new System.Threading.Timer(o =>
+            {
+                _board.Update();
+            }, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+        }
+
+        public void Start()
+        {
             IsRunning = true;
-			_timer.Change(100, 50);
-		}
+            _timer.Change(100, 50);
+        }
 
-		public void Pause()
-		{
+        public void Pause()
+        {
             IsRunning = false;
-			_timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+            _timer.Change(System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
 
-		}
+        }
 
-		public void Clear()
-		{
-			Pause();
-			_board.KillAll();
-		}
+        public void Clear()
+        {
+            Pause();
+            _board.KillAll();
+        }
 
-		public void Step()
-		{
-			_board.ComputeAllNextStates();
-			_board.Update();
-		}
-	}
+        public void Step()
+        {
+            _board.ComputeAllNextStates();
+            _board.Update();
+        }
+    }
 
-    
+
 }

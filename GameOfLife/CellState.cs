@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GameOfLife
+﻿namespace GameOfLife
 {
-	public enum CellState
-	{
-		Alive=1,
-		Dead=2
-	}
+    public enum CellState
+    {
+        Alive = 1,
+        Dead = 2
+    }
 }

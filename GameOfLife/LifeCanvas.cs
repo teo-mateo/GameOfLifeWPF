@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace GameOfLife
 {
 
-    public class LifeCanvas : Canvas
-    {
+	public class LifeCanvas : Canvas
+	{
 		public event EventHandler<GenericEventArgs<string>> LogEvent;
 		private void OnLog(string payload)
 		{
-			if(LogEvent != null)
+			if (LogEvent != null)
 			{
 				LogEvent(this, new GenericEventArgs<string>(payload));
 			}
@@ -30,7 +24,7 @@ namespace GameOfLife
 		private bool _busy;
 		public static Stack<Rectangle> RectPool = new Stack<Rectangle>();
 
-        public Cell[,] Cells;
+		public Cell[,] Cells;
 		public Stats Stats { get; set; }
 
 		Brush _cAlive = new SolidColorBrush(Colors.LightGreen);
@@ -46,17 +40,17 @@ namespace GameOfLife
 		}
 
 		public uint CellWidth
-        {
-            get
-            {
-                return (uint)GetValue(CellWidthProperty);
-            }
-            set
-            {
-                SetValue(CellWidthProperty, value);
-                Width = CellWidth * G.CELL_SIZE;
-            }
-        }
+		{
+			get
+			{
+				return (uint)GetValue(CellWidthProperty);
+			}
+			set
+			{
+				SetValue(CellWidthProperty, value);
+				Width = CellWidth * G.CELL_SIZE;
+			}
+		}
 		public uint CellHeight
 		{
 			get
@@ -71,28 +65,28 @@ namespace GameOfLife
 		}
 
 		#region DepProps
-		public static DependencyProperty CellWidthProperty = DependencyProperty.Register( "CellWidth", typeof(uint), typeof(LifeCanvas),  new PropertyMetadata()
+		public static DependencyProperty CellWidthProperty = DependencyProperty.Register("CellWidth", typeof(uint), typeof(LifeCanvas), new PropertyMetadata()
+		{
+			PropertyChangedCallback = (d, e) =>
 			{
-				PropertyChangedCallback = (d, e) =>
-				{
-					((LifeCanvas)d).Width = ((uint)e.NewValue) * G.CELL_SIZE + (uint)e.NewValue;
-					((LifeCanvas)d).GenerateCells();
-				}
-			});
+				((LifeCanvas)d).Width = ((uint)e.NewValue) * G.CELL_SIZE + (uint)e.NewValue;
+				((LifeCanvas)d).GenerateCells();
+			}
+		});
 
 
 		public static DependencyProperty CellHeightProperty = DependencyProperty.Register("CellHeight", typeof(uint), typeof(LifeCanvas), new PropertyMetadata()
+		{
+			PropertyChangedCallback = (d, e) =>
 			{
-				PropertyChangedCallback = (d, e) =>
-				{
-					((LifeCanvas)d).Height = ((uint)e.NewValue) * G.CELL_SIZE + (uint)e.NewValue;
-					((LifeCanvas)d).GenerateCells();
-				}
-			}); 
+				((LifeCanvas)d).Height = ((uint)e.NewValue) * G.CELL_SIZE + (uint)e.NewValue;
+				((LifeCanvas)d).GenerateCells();
+			}
+		});
 		#endregion
 
 		public LifeCanvas() : base()
-        {
+		{
 			Controller = new GameOfLife.Controller(this);
 			Stats = new GameOfLife.Stats((int)(this.CellHeight * this.CellWidth));
 
@@ -124,19 +118,19 @@ namespace GameOfLife
 			}
 
 			base.Loaded += (s, e) => GenerateCells();
-        }
+		}
 
-        private void GenerateCells()
-        {
+		private void GenerateCells()
+		{
 
-            if (CellWidth == 0 || CellHeight == 0)
-                return;
+			if (CellWidth == 0 || CellHeight == 0)
+				return;
 
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 
 			//clear
-			foreach(var r in this.Children.OfType<Rectangle>())
+			foreach (var r in this.Children.OfType<Rectangle>())
 			{
 				LifeCanvas.RectPool.Push(r);
 			}
@@ -160,7 +154,7 @@ namespace GameOfLife
 					X1 = q * G.CELL_SIZE + q,
 					X2 = q * G.CELL_SIZE + q,
 					Y1 = -5,
-					Y2 = G.CELL_SIZE * CellHeight + CellHeight + 5, 
+					Y2 = G.CELL_SIZE * CellHeight + CellHeight + 5,
 					Stroke = Brushes.AliceBlue,
 					Opacity = 0.3
 				};
@@ -189,43 +183,43 @@ namespace GameOfLife
 			#endregion
 
 			Cells = new Cell[CellWidth, CellHeight];
-            for (int i = 0; i < CellWidth; i++)
-            {
-                for (int j = 0; j < CellHeight; j++)
-                {
-                    Cells[i, j] = new Cell(i, j, l=>OnLog(l));
-                    this.Children.Add(Cells[i, j].Rect);
-                }
-            }
+			for (int i = 0; i < CellWidth; i++)
+			{
+				for (int j = 0; j < CellHeight; j++)
+				{
+					Cells[i, j] = new Cell(i, j, l => OnLog(l));
+					this.Children.Add(Cells[i, j].Rect);
+				}
+			}
 
 			Debug.WriteLine("Took " + sw.ElapsedMilliseconds + "ms to fill board");
 			sw.Restart();
 
-            foreach(var cell in Cells)
-            {
-                int[][] positions;
+			foreach (var cell in Cells)
+			{
+				int[][] positions;
 
-                var xs = new int[] { cell.X - 1, cell.X, cell.X + 1 };
-                var ys = new int[] { cell.Y - 1, cell.Y, cell.Y + 1 };
+				var xs = new int[] { cell.X - 1, cell.X, cell.X + 1 };
+				var ys = new int[] { cell.Y - 1, cell.Y, cell.Y + 1 };
 
-                positions =
-                    (from x in xs
-                     from y in ys
-                     where (
-                     x >= 0 && y >= 0
-                     &&
-                     (x != cell.X || y != cell.Y)
-                     &&
-                     (x < this.CellWidth && y < this.CellHeight))
-                     select new int[] { x, y }).ToArray();
+				positions =
+					(from x in xs
+					 from y in ys
+					 where (
+					 x >= 0 && y >= 0
+					 &&
+					 (x != cell.X || y != cell.Y)
+					 &&
+					 (x < this.CellWidth && y < this.CellHeight))
+					 select new int[] { x, y }).ToArray();
 
-                cell.Neighbours = positions.Select(p => Cells[p[0], p[1]]).ToArray();
+				cell.Neighbours = positions.Select(p => Cells[p[0], p[1]]).ToArray();
 				cell.ComputeNextState();
-            }
+			}
 
 			Debug.WriteLine("Took " + sw.ElapsedMilliseconds + "ms to determine each cell neighbours");
 			sw.Stop();
-        }
+		}
 		public void Regen()
 		{
 			Controller.Pause();
@@ -234,7 +228,7 @@ namespace GameOfLife
 		}
 
 		public void Update()
-        {
+		{
 			if (_busy)
 			{
 				Debug.WriteLine("Busy, skipping update.");
@@ -252,7 +246,7 @@ namespace GameOfLife
 			}
 			ComputeAllNextStates();
 			UpdateUI(toUpdate.ToArray());
-        }
+		}
 
 		public void UpdateAllUI()
 		{
@@ -265,9 +259,9 @@ namespace GameOfLife
 
 		public void UpdateUI(params Cell[] toUpdate)
 		{
-            //in case of shutting down
-            if (Application.Current == null)
-                return;
+			//in case of shutting down
+			if (Application.Current == null)
+				return;
 
 			Application.Current.Dispatcher.InvokeAsync(() =>
 			{
@@ -295,7 +289,7 @@ namespace GameOfLife
 						{
 							cell.Rect.Fill = Brushes.Transparent;
 						}
-						
+
 					}
 				}
 				finally
@@ -309,14 +303,14 @@ namespace GameOfLife
 		{
 			int alive = 0;
 			foreach (var cell in Cells)
-				alive += (cell.State == CellState.Alive) ? 1:0;
+				alive += (cell.State == CellState.Alive) ? 1 : 0;
 
 			this.Stats.TotalAlive = alive;
 		}
 
 		internal void KillAll()
 		{
-			foreach(var cell in Cells)
+			foreach (var cell in Cells)
 			{
 				if (cell.State == CellState.Alive)
 					cell.State = CellState.Dead;
